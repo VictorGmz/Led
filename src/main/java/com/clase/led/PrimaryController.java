@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.paint.Color;
 
 public class PrimaryController implements Initializable {
 
@@ -20,7 +21,7 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+        cpicker.setValue(Color.RED);
         boton.textProperty().bind(new When(shapeLed.blinkingProperty())
                 .then("ON")
                 .otherwise("OFF"));

@@ -113,9 +113,9 @@ public class ShapeLed extends Region {
         widthProperty().addListener(observable -> recalc());
         heightProperty().addListener(observable -> recalc());
         frameVisibleProperty().addListener(observable -> drawRectangle());
-//        frameVisibleProperty().addListener(observable -> drawCircle());
+//      frameVisibleProperty().addListener(observable -> drawCircle());
         onProperty().addListener(observable -> drawRectangle());
-//       onProperty().addListener(observable -> drawCircle());
+//      onProperty().addListener(observable -> drawCircle());
         ledColorProperty().addListener(observable -> recalc());
         borderColorProperty().addListener(observable -> recalc());
 
@@ -308,12 +308,12 @@ public class ShapeLed extends Region {
     private void recalc() {
         double size = getWidth() < getHeight() ? getWidth() : getHeight();
 
-        ledOffShadow = new InnerShadow(BlurType.TWO_PASS_BOX, 
+        ledOffShadow = new InnerShadow(BlurType.TWO_PASS_BOX,
                 Color.rgb(0, 0, 0, 0.65), 0.07 * size, 0, 0, 0);
 
-        ledOnShadow = new InnerShadow(BlurType.TWO_PASS_BOX, 
+        ledOnShadow = new InnerShadow(BlurType.TWO_PASS_BOX,
                 Color.rgb(0, 0, 0, 0.65), 0.07 * size, 0, 0, 0);
-        ledOnShadow.setInput(new DropShadow(BlurType.TWO_PASS_BOX, 
+        ledOnShadow.setInput(new DropShadow(BlurType.TWO_PASS_BOX,
                 ledColor.get(), 0.36 * size, 0, 0, 0));
 
         frameGradient = new LinearGradient(0.14 * size, 0.14 * size,
@@ -346,7 +346,7 @@ public class ShapeLed extends Region {
                 false, CycleMethod.NO_CYCLE,
                 new Stop(0.0, Color.WHITE),
                 new Stop(1.0, Color.TRANSPARENT));
-        
+
         //Gradiente creado para visualizar el brillo en la esquina del 
         //rectángulo no se puede usar un radial gradient en un rectangle
         highlightGradientRectangle = new LinearGradient(0, 0,
@@ -354,7 +354,6 @@ public class ShapeLed extends Region {
                 false, CycleMethod.NO_CYCLE,
                 new Stop(0.0, Color.WHITE),
                 new Stop(1.0, Color.TRANSPARENT));
-        
 
         drawRectangle();
         //drawCircle();
