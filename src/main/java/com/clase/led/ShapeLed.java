@@ -23,7 +23,6 @@ import javafx.beans.property.LongPropertyBase;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.EventHandler;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.InnerShadow;
@@ -59,6 +58,7 @@ public class ShapeLed extends Region {
     private LinearGradient frameGradient;
     private LinearGradient ledOnGradient;
     private LinearGradient ledOffGradient;
+    private LinearGradient highlightGradientRectangle;
     private RadialGradient highlightGradient;
     private long lastTimerCall;
     private long _interval = 500_000_000l;
@@ -113,19 +113,21 @@ public class ShapeLed extends Region {
         widthProperty().addListener(observable -> recalc());
         heightProperty().addListener(observable -> recalc());
         frameVisibleProperty().addListener(observable -> drawRectangle());
-        //frameVisibleProperty().addListener(observable -> drawCircle());
+//        frameVisibleProperty().addListener(observable -> drawCircle());
         onProperty().addListener(observable -> drawRectangle());
-       // onProperty().addListener(observable -> drawCircle());
+//       onProperty().addListener(observable -> drawCircle());
         ledColorProperty().addListener(observable -> recalc());
         borderColorProperty().addListener(observable -> recalc());
 
-        //1. Añade un listener al control para que, al hacer click sobre el mismo, 
-        //se detenga o empiece a parpadear.
+        //1. Añade un listener al control para que, al hacer click sobre el 
+        //mismo, se detenga o empiece a parpadear.
         this.setOnMouseClicked((MouseEvent evt) -> {
             if (this.isBlinking()) {
                 this.setBlinking(false);
+                this.setOn(false);
             } else {
                 this.setBlinking(true);
+                this.setOn(true);
             }
         });
         //2. Modifica la propiedad hover del control para cambiar su color al 
@@ -220,7 +222,8 @@ public class ShapeLed extends Region {
             interval = new LongPropertyBase() {
                 @Override
                 public void set(final long INTERVAL) {
-                    super.set(clamp(SHORTEST_INTERVAL, LONGEST_INTERVAL, INTERVAL));
+                    super.set(clamp(SHORTEST_INTERVAL, LONGEST_INTERVAL,
+                            INTERVAL));
                 }
 
                 @Override
@@ -251,7 +254,8 @@ public class ShapeLed extends Region {
 
     public final BooleanProperty frameVisibleProperty() {
         if (null == frameVisible) {
-            frameVisible = new SimpleBooleanProperty(this, "frameVisible", _frameVisible);
+            frameVisible = new SimpleBooleanProperty(this, "frameVisible",
+                    _frameVisible);
         }
         return frameVisible;
     }
@@ -267,7 +271,8 @@ public class ShapeLed extends Region {
 
     private ObjectProperty<Color> borderColorProperty() {
         if (null == borderColor) {
-            borderColor = new SimpleObjectProperty<>(this, "borderColor", Color.TRANSPARENT);
+            borderColor = new SimpleObjectProperty<>(this, "borderColor",
+                    Color.TRANSPARENT);
         }
         return borderColor;
     }
@@ -303,10 +308,13 @@ public class ShapeLed extends Region {
     private void recalc() {
         double size = getWidth() < getHeight() ? getWidth() : getHeight();
 
-        ledOffShadow = new InnerShadow(BlurType.TWO_PASS_BOX, Color.rgb(0, 0, 0, 0.65), 0.07 * size, 0, 0, 0);
+        ledOffShadow = new InnerShadow(BlurType.TWO_PASS_BOX, 
+                Color.rgb(0, 0, 0, 0.65), 0.07 * size, 0, 0, 0);
 
-        ledOnShadow = new InnerShadow(BlurType.TWO_PASS_BOX, Color.rgb(0, 0, 0, 0.65), 0.07 * size, 0, 0, 0);
-        ledOnShadow.setInput(new DropShadow(BlurType.TWO_PASS_BOX, ledColor.get(), 0.36 * size, 0, 0, 0));
+        ledOnShadow = new InnerShadow(BlurType.TWO_PASS_BOX, 
+                Color.rgb(0, 0, 0, 0.65), 0.07 * size, 0, 0, 0);
+        ledOnShadow.setInput(new DropShadow(BlurType.TWO_PASS_BOX, 
+                ledColor.get(), 0.36 * size, 0, 0, 0));
 
         frameGradient = new LinearGradient(0.14 * size, 0.14 * size,
                 0.84 * size, 0.84 * size,
@@ -322,8 +330,8 @@ public class ShapeLed extends Region {
                 0.74 * size, 0.74 * size,
                 false, CycleMethod.NO_CYCLE,
                 new Stop(0.0, ledColor.get().deriveColor(0d, 1d, 0.77, 1d)),
-                new Stop(0.49, borderColor.get().deriveColor(0d, 1d, 0.5, 1d)),
-                new Stop(1.0, borderColor.get()));
+                new Stop(0.49, ledColor.get().deriveColor(0d, 1d, 0.5, 1d)),
+                new Stop(1.0, ledColor.get()));
 
         ledOffGradient = new LinearGradient(0.25 * size, 0.25 * size,
                 0.74 * size, 0.74 * size,
@@ -338,6 +346,15 @@ public class ShapeLed extends Region {
                 false, CycleMethod.NO_CYCLE,
                 new Stop(0.0, Color.WHITE),
                 new Stop(1.0, Color.TRANSPARENT));
+        
+        //Gradiente creado para visualizar el brillo en la esquina del 
+        //rectángulo no se puede usar un radial gradient en un rectangle
+        highlightGradientRectangle = new LinearGradient(0, 0,
+                0.3 * size, 0.3 * size,
+                false, CycleMethod.NO_CYCLE,
+                new Stop(0.0, Color.WHITE),
+                new Stop(1.0, Color.TRANSPARENT));
+        
 
         drawRectangle();
         //drawCircle();
@@ -366,7 +383,7 @@ public class ShapeLed extends Region {
 
         var oval2 = new Ellipse(centerX, centerY, 0.72 * size, 0.72 * size);
         if (isOn()) {
-            oval2.setEffect(ledOffShadow);
+            oval2.setEffect(ledOnShadow);
             oval2.setFill(ledOnGradient);
         } else {
             oval2.setEffect(ledOffShadow);
@@ -385,6 +402,7 @@ public class ShapeLed extends Region {
         if (width <= 0 || height <= 0) {
             return;
         }
+
         double size = width < height ? width / 2 : height / 2;
 
         // Limpia la región y comienza a dibujar de nuevo
@@ -394,6 +412,7 @@ public class ShapeLed extends Region {
             var rect1 = new Rectangle(size, size);
             rect1.setX(35);
             rect1.setY(35);
+
             rect1.setFill(frameGradient);
             getChildren().add(rect1);
         }
@@ -412,9 +431,7 @@ public class ShapeLed extends Region {
         var rect3 = new Rectangle(0.58 * size, 0.58 * size);
         rect3.setX(72);
         rect3.setY(72);
-        rect3.setFill(highlightGradient);
-
+        rect3.setFill(highlightGradientRectangle);
         getChildren().add(rect3);
     }
-
 }

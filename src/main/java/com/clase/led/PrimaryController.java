@@ -2,6 +2,7 @@ package com.clase.led;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.binding.When;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,25 +20,27 @@ public class PrimaryController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
         
-        //3. Añade una propiedad “borderColor” que permita elegir el color
-        //del borde del led
+        boton.textProperty().bind(new When(shapeLed.blinkingProperty())
+                .then("ON")
+                .otherwise("OFF"));
     }
-
+    
     //4. Crea una interfaz que haga uso del led, con un botón de tipo switch 
     //para activarlo/desactivarlo y un ColorPicker para elegir el color de borde
     //y led
-    
+    //Boton tipo SWITCH
     @FXML
     private void parpadeoButton(ActionEvent event) {
-        if (shapeLed.isBlinking()) {
-            shapeLed.setBlinking(false);
+        if("ON".equals(boton.getText())){
+            shapeLed.blinkingProperty().set(false);
+            boton.setSelected(false);
         } else {
-            shapeLed.setBlinking(true);
+            shapeLed.blinkingProperty().set(true);
+            boton.setSelected(true);
         }
     }
-
+    //Color Picker
     @FXML
     private void colorBorde(ActionEvent event) {
         shapeLed.setLedColor(cpicker.getValue());
