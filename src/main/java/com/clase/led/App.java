@@ -18,9 +18,9 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 350, 400);
+        scene = new Scene(loadFXML("primary"), 350 , 411);
         stage.setScene(scene);
-        stage.setTitle(STYLESHEET_MODENA);
+        stage.setTitle("Led cuadrado");
         stage.show();
     }
 

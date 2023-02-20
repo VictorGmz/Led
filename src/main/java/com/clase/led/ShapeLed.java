@@ -113,9 +113,9 @@ public class ShapeLed extends Region {
         widthProperty().addListener(observable -> recalc());
         heightProperty().addListener(observable -> recalc());
         frameVisibleProperty().addListener(observable -> drawRectangle());
-//      frameVisibleProperty().addListener(observable -> drawCircle());
+        //frameVisibleProperty().addListener(observable -> drawCircle());
         onProperty().addListener(observable -> drawRectangle());
-//      onProperty().addListener(observable -> drawCircle());
+        //onProperty().addListener(observable -> drawCircle());
         ledColorProperty().addListener(observable -> recalc());
         borderColorProperty().addListener(observable -> recalc());
 
@@ -269,7 +269,7 @@ public class ShapeLed extends Region {
         borderColorProperty().set(BORDER_COLOR);
     }
 
-    private ObjectProperty<Color> borderColorProperty() {
+    public ObjectProperty<Color> borderColorProperty() {
         if (null == borderColor) {
             borderColor = new SimpleObjectProperty<>(this, "borderColor",
                     Color.TRANSPARENT);
@@ -350,7 +350,7 @@ public class ShapeLed extends Region {
         //Gradiente creado para visualizar el brillo en la esquina del 
         //rectángulo no se puede usar un radial gradient en un rectangle
         highlightGradientRectangle = new LinearGradient(0, 0,
-                0.3 * size, 0.3 * size,
+                0.5 * size, 0.5 * size,
                 false, CycleMethod.NO_CYCLE,
                 new Stop(0.0, Color.WHITE),
                 new Stop(1.0, Color.TRANSPARENT));
@@ -403,21 +403,20 @@ public class ShapeLed extends Region {
         }
 
         double size = width < height ? width / 2 : height / 2;
-
         // Limpia la región y comienza a dibujar de nuevo
         getChildren().clear();
 
         if (isFrameVisible()) {
             var rect1 = new Rectangle(size, size);
-            rect1.setX(35);
-            rect1.setY(35);
+            rect1.setX(width/2 - size /2);
+            rect1.setY(height/2 - size/2);
 
             rect1.setFill(frameGradient);
             getChildren().add(rect1);
         }
         var rect2 = new Rectangle(0.72 * size, 0.72 * size);
-        rect2.setX(60);
-        rect2.setY(60);
+            rect2.setX(width/2 - (size*0.72)/2);
+            rect2.setY(height/2 - (size*0.72)/2);
         if (isOn()) {
             rect2.setEffect(ledOnShadow);
             rect2.setFill(ledOnGradient);
@@ -428,8 +427,8 @@ public class ShapeLed extends Region {
         getChildren().add(rect2);
 
         var rect3 = new Rectangle(0.58 * size, 0.58 * size);
-        rect3.setX(72);
-        rect3.setY(72);
+            rect3.setX(width/2 - (size*0.58)/2);
+            rect3.setY(height/2 -(size*0.58)/2);
         rect3.setFill(highlightGradientRectangle);
         getChildren().add(rect3);
     }
